@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home | Colby Now Merchandise</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+
+  <body class="text-center mt-5">
+    <div class="container">
+      <h1 class="mb-4 text-primary">Welcome to Colby Now Merchandise</h1>
+      <p class="lead">
+        Hello, {{ user.name }}! <br />
+        You’re successfully logged in.
+      </p>
+
+      <a href="{{ url_for('auth.logout') }}" class="btn btn-danger mt-3">
+        Log Out
+      </a>
+    </div>
+  </body>
+</html>
