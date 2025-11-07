@@ -46,16 +46,16 @@
                 </div>
 
                 <div class="d-none d-md-flex align-items-center gap-4">
-                    <a href="#" class="text-secondary text-decoration-none fw-medium">Home</a>
-                    <a href="#" class="text-secondary text-decoration-none fw-medium">Buy</a>
-                    <a href="#" class="text-dark text-decoration-none fw-medium">Sell or Donate</a>
+                    <a href="{{ url_for('main.home') }}" class="text-secondary text-decoration-none fw-medium">Home</a>
+                    <a href="{{ url_for('main.buy_item') }}" class="text-secondary text-decoration-none fw-medium">Buy</a>
+                    <a href="{{ url_for('main.post_item')}}" class="text-dark text-decoration-none fw-medium">Sell or Donate</a>
                     <a href="#" class="text-secondary text-decoration-none fw-medium">My Listings</a>
                     <a href="#" class="text-secondary text-decoration-none fw-medium">About</a>
                     <a href="#" class="text-secondary text-decoration-none fw-medium">Contact</a>
                 </div>
 
                 <div class="d-flex align-items-center gap-4">
-                    <a href="#" class="text-secondary text-decoration-none d-flex align-items-center gap-1">
+                    <a href="{{ url_for('main.buy_item') }}" class="text-secondary text-decoration-none d-flex align-items-center gap-1">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem;">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -72,7 +72,7 @@
                         </svg>
                         <span class="text-sm fw-bold">3</span>
                     </a>
-                    <a href="#" class="text-secondary text-decoration-none text-sm fw-medium">Logout</a>
+                    <a href="{{ url_for('auth.logout') }}" class="text-secondary text-decoration-none text-sm fw-medium">Logout</a>
                 </div>
             </div>
         </div>
@@ -192,10 +192,10 @@
 
                 <div class="col-md-6 col-lg-auto">
                     <nav class="d-flex flex-wrap justify-content-center justify-content-md-end gap-3 gap-lg-4">
-                        <a href="#" class="text-secondary text-decoration-none fw-medium">Home</a>
+                        <a href="{{ url_for('main.home') }}" class="text-secondary text-decoration-none fw-medium">Home</a>
                         <a href="#" class="text-secondary text-decoration-none fw-medium">About</a>
-                        <a href="#" class="text-secondary text-decoration-none fw-medium">Browse Items</a>
-                        <a href="#" class="text-secondary text-decoration-none fw-medium">Post an Item</a>
+                        <a href="{{ url_for('main.buy_item') }}" class="text-secondary text-decoration-none fw-medium">Browse Items</a>
+                        <a href="{{ url_for('main.post_item') }}" class="text-secondary text-decoration-none fw-medium">Post an Item</a>
                         <a href="#" class="text-secondary text-decoration-none fw-medium">FAQs</a>
                         <a href="#" class="text-secondary text-decoration-none fw-medium">Contact Us</a>
                     </nav>
