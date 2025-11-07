@@ -23,7 +23,7 @@
     <nav class="navbar navbar-expand-lg bg-white shadow-sm">
         <div class="container-xl">
             <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.home') }}">
-                <img src="{{ url_for('static', 'images/colbynow_merch_logo.png') }}" alt="ColbyNow Logo" class="rounded-circle" style="height: 40px; width: 40px;">
+                <img src="{{ url_for('static', filename='images/colbynow_merch_logo.png') }}" alt="ColbyNow Logo" class="rounded-circle" style="height: 40px; width: 40px;">
                 <span class="fs-5 fw-bold text-dark ms-2">ColbyNow Merchandise</span>
             </a>
             
@@ -108,11 +108,11 @@
                         </div>
                         <div>
                             <strong>Seller</strong>
-                            {{ item.seller }}
+                            {{ item.seller.name if item.seller else "Unknown" }}
                         </div>
                         <div>
                             <strong>Listed</strong>
-                            {{ item.listed_date }}
+                            {{ item.created_at.strftime('%B %d, %Y') if item.created_at else "Unknown" }}
                         </div>
                     </div>
 
