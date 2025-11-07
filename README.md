@@ -21,16 +21,17 @@ Colby-Now-Merchandise/
     ├── models.py       # SQLAlchemy database models
     ├── static/
     │   ├── css/
-    │   │   ├── buy_item.css
     │   │   ├── auth.css
+    │   │   ├── buy_item.css
     │   │   └── style.css
     │   ├── images/
     │   │   ├── bg-1.jpg
     │   │   ├── colby_logo.jpg
-    │   │   ├── colbynow_logo.png
+    │   │   ├── colbynow_merch_logo.png
     │   │   └── miller_library.jpg
-    │   └── js/
-    │       └── auth.js
+    │   ├── js/
+    │   │   └── auth.js
+    │   └── uploads/    # User-uploaded item images (auto-generated)
     └── templates/
         ├── buy_item.html
         ├── forgot_password.html
@@ -41,7 +42,8 @@ Colby-Now-Merchandise/
         ├── reset_password.html
         └── signup.html
 ```
-```
+
+**Note:** The `.env` file (for environment variables) should be created in the root directory as described in the "Configure Environment Variables" section below. The `instance/` and `static/uploads/` directories are auto-generated when the application runs.
 
 ## Getting Started
 
