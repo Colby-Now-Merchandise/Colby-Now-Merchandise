@@ -1,6 +1,7 @@
 # Colby-Now-Merchandise
+<center> <img src="app/static/images/colbynow_merch_logo.png" width=300px></center>
 A full-stack web application that serves as an online marketplace for the Colby College community where students, staff, and faculty can buy, sell, and donate items.
- - This project uses a **Flask** backend to handle user authentication, product listings, and other business logic, with a standard **HTML**, **CSS**, and **JavaScript** frontend.
+ - This project uses a **Flask** backend to handle user authentication, product listings, and other business logic, with a standard **HTML**, **CSS**, and **JavaScript** frontend.  
 
 ## Directory Structure
 
