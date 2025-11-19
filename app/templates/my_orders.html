@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy an Item - ColbyNow Merchandise</title>
+
+    <!-- Load Google Font 'Inter' -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Load Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Load Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/buy_item.css') }}">
+
+</head>
+
+<body class="bg-light">
+
+    {% include "_navbar.html" %}
+
+    <!-- Main Content Area -->
+
+    <main class="container my-5">
+        <h1 class="display-5 fw-bold">View my Orders</h1>
+        <p class="text-muted fs-5">Track your current pending, approved and successfully delivered orders</p>
+    
+        <!-- Pending Orders -->
+        <section class="mt-4">
+            <h3 class="text-lg fw-semibold">Pending Orders</h3>
+            {% if pending_orders %}
+                {% for order in pending_orders %}
+                    <div class="bg-white p-4 rounded shadow-sm mb-3 d-flex justify-content-between align-items-center">
+                        <div>
+                            <p><strong>Item:</strong> {{ order.item.title }} • <strong>Price Offer:</strong> ${{ order.price_offer }}</p>
+                            <p><strong>Pickup:</strong> {{ order.location }} • <strong>Payment Method:</strong> {{ order.payment_method }}</p>
+                            <p><strong>Notes:</strong> {{ order.notes }}</p>
+                        </div>
+                    
+                        <!-- Image on the right -->
+                        <div>
+                            <img src="{{ url_for('static', filename=order.item.image_url) }}" alt="{{ order.item.title }}" class="img-fluid" style="max-width: 150px; height: auto;">
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No pending orders.</p>
+            {% endif %}
+        </section>
+    
+        <!-- Approved Orders -->
+        <section class="mt-4">
+            <h3 class="text-lg fw-semibold">Approved Orders</h3>
+            {% if approved_orders %}
+                {% for order in approved_orders %}
+                    <div class="bg-white p-4 rounded shadow-sm mb-3">
+                        <p><strong>Item:</strong> {{ order.item.name }}</p>
+                        <p><strong>Status:</strong> Approved</p>
+                        <button class="btn btn-success btn-sm" onclick="confirmDelivery({{ order.id }})">
+                            Confirm Item Receipt
+                        </button>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No approved orders.</p>
+            {% endif %}
+        </section>
+    
+        <!-- Delivered Orders -->
+        <section class="mt-4">
+            <h3 class="text-lg fw-semibold">Delivered Orders</h3>
+            {% if delivered_orders %}
+                {% for order in delivered_orders %}
+                    <div class="bg-white p-4 rounded shadow-sm mb-3">
+                        <p><strong>Item:</strong> {{ order.item.name }}</p>
+                        <p><strong>Status:</strong> Delivered</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No delivered orders.</p>
+            {% endif %}
+        </section>
+    </main>
+
+
+<!-- Footer -->
+    <footer class="border-top mt-5">
+        <div class="container py-4">
+            <p class="text-center text-muted small">
+                COPYRIGHTS COLBY.EDU. ALL RIGHTS RESERVED
+            </p>
+        </div>
+    </footer>
+
+    <!-- Load Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="/app/static/js/home.js"></script>
+</body>
+
+</html>

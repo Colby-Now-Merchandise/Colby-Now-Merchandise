@@ -52,3 +52,24 @@ class Item(db.Model):
         return cls.query.filter(
             cls.title.ilike(f"%{term}%") | cls.description.ilike(f"%{term}%")
         )
+    
+
+class Order(db.Model):
+    __tablename__ = "orders"
+    id = db.Column(db.Integer, primary_key=True)
+
+    buyer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable=False)
+
+    price_offer = db.Column(db.Float, nullable=False)
+    location = db.Column(db.String(255), nullable=False)
+    payment_method = db.Column(db.String(50), nullable=False)
+    notes = db.Column(db.Text)
+    status = db.Column(db.String(20), default="pending")
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    item = db.relationship("Item", backref="orders")
+
+    def __repr__(self):
+        return f"<Order {self.item_id} (${self.price_offer})>"
