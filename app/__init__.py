@@ -1,6 +1,7 @@
-from flask import Flask, redirect, url_for, flash
+from flask import Flask, app, redirect, url_for, flash
 from flask_login import LoginManager
 from flask_mail import Mail
+from flask_dance.contrib.google import make_google_blueprint
 from .models import db, User
 from .auth import auth
 from .main import main
@@ -17,7 +18,15 @@ def create_app():
 
     # Basic app configuration
     app.secret_key = os.getenv("SECRET_KEY", "dev_secret_key")
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
+
+    # Get database URL
+    database_url = os.getenv("DATABASE_URL", "sqlite:///users.db")
+
+    # Format Postgres URLs for SQLAlchemy
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB max uploaded file size
 
@@ -44,6 +53,20 @@ def create_app():
     # Register blueprints
     app.register_blueprint(auth, url_prefix="/auth")
     app.register_blueprint(main)
+    
+    # OAuth setup for Google Login
+    google_bp = make_google_blueprint(
+        client_id=os.getenv("GOOGLE_CLIENT_ID"),
+        client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
+        scope=[
+            "openid",
+            "https://www.googleapis.com/auth/userinfo.profile",
+            "https://www.googleapis.com/auth/userinfo.email",
+        ],
+        redirect_url="/auth/google"
+    )
+    app.register_blueprint(google_bp, url_prefix="/login")
+
 
     # Create tables if missing
     with app.app_context():
