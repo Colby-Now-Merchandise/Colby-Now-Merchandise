@@ -4,6 +4,12 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
+favorites_table = db.Table(
+    'favorites',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
+    db.Column('item_id', db.Integer, db.ForeignKey('items.id'), primary_key=True),
+    db.Column('created_at', db.DateTime, default=datetime.utcnow)
+)
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
@@ -13,6 +19,9 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(200), nullable=False)
     name = db.Column(db.String(150), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    favorites = db.relationship('Item', secondary=favorites_table,
+                                backref=db.backref('favorited_by', lazy='dynamic'),
+                                lazy='dynamic')
 
     items = db.relationship("Item", backref="seller", lazy=True)
 

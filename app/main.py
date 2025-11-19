@@ -302,7 +302,33 @@ def delete_item(item_id):
     db.session.delete(item)
     db.session.commit()
     flash("Item deleted successfully.", "success")
-    return redirect(url_for("main.my_listings"))
+    return redirect(url_for('main.my_listings'))
+
+@main.route('/favorites')
+@login_required
+def favorites():
+    fav_items = current_user.favorites.all() if hasattr(current_user.favorites, 'all') else list(current_user.favorites)
+    return render_template('favorites.html', favorites=fav_items)
+
+@main.route('/favorites/add/<int:item_id>', methods=['POST'])
+@login_required
+def add_favorite(item_id):
+    item = Item.query.get_or_404(item_id)
+    if not current_user.favorites.filter_by(id=item.id).first():
+        current_user.favorites.append(item)
+        db.session.commit()
+        flash('Added to favorites', 'success')
+    return redirect(request.referrer or url_for('main.favorites'))
+
+@main.route('/favorites/remove/<int:item_id>')
+@login_required
+def remove_favorite(item_id):
+    item = Item.query.get_or_404(item_id)
+    if current_user.favorites.filter_by(id=item.id).first():
+        current_user.favorites.remove(item)
+        db.session.commit()
+        flash('Removed from favorites', 'success')
+    return redirect(request.referrer or url_for('main.favorites'))
 
 
 @main.route("/contact_us", methods=["GET", "POST"])
