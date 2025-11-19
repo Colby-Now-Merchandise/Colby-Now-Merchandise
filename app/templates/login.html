@@ -70,6 +70,13 @@
                   </div>                  
                 </form>
 
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('google.login') }}" class="google-btn w-100">
+                        <img src="https://developers.google.com/identity/images/g-logo.png" class="google-icon" alt="Google Icon">
+                        <span>Sign in with Google</span>
+                    </a>
+                </div>
+
                 <p class="text-center mt-3">
                   Not a member? <a href="{{ url_for('auth.signup') }}" class="text-warning fw-bold">Sign Up</a>
                 </p>

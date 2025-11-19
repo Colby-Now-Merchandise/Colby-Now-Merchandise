@@ -13,6 +13,8 @@ from flask_login import login_user, logout_user, login_required
 from itsdangerous import URLSafeTimedSerializer
 from .models import User, db
 from .validators import is_valid_email, is_strong_password
+from flask_dance.contrib.google import google
+import os
 
 
 # blueprint for authenticaiton routes
@@ -235,3 +237,40 @@ def verify_email(token):
 
     flash("Your email has been verified! You can now log in.", "success")
     return redirect(url_for("auth.login"))
+
+
+
+# ---------- GOOGLE LOGIN ----------
+
+@auth.route("/google")
+def google_login():
+    if not google.authorized:
+        return redirect(url_for("google.login"))
+
+    resp = google.get("https://www.googleapis.com/oauth2/v3/userinfo")
+    user_info = resp.json()
+
+    email = user_info["email"]
+    name = user_info.get("name", "Google User")
+
+    # --- Restrict Google login to Colby emails ---
+    if not email.endswith("@colby.edu"):
+        flash("Please use your @colby.edu email address to sign in.", "danger")
+        return redirect(url_for("auth.login"))
+
+    # Check if user exists
+    user = User.query.filter_by(email=email).first()
+
+    if not user:
+        user = User(
+            name=name,
+            email=email,
+            password=generate_password_hash(os.urandom(16).hex()),
+            is_verified=True
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    login_user(user)
+    flash("Logged in with Google!", "success")
+    return redirect(url_for("main.home"))
