@@ -6,8 +6,8 @@ db = SQLAlchemy()
 
 favorites_table = db.Table(
     'favorites',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('item_id', db.Integer, db.ForeignKey('item.id'), primary_key=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
+    db.Column('item_id', db.Integer, db.ForeignKey('items.id'), primary_key=True),
     db.Column('created_at', db.DateTime, default=datetime.utcnow)
 )
 
