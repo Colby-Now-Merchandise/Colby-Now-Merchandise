@@ -41,34 +41,23 @@
         <h1 class="display-5 fw-bold">Place Your Order</h1>
         <p class="text-muted fs-5">Set your pickup method, payment option, and notes for the seller.</p>
 
-    <!-- Order Form -->
-        <form action="{{ url_for('main.create_order', item_id=item.id) }}" method="POST" class="bg-white p-4 rounded shadow-sm">
-    
+        <!-- Order Form -->
+        <form action="{{ url_for('main.create_order', item_id=item.id) }}" method="POST"
+            class="bg-white p-4 rounded shadow-sm">
+
             <!-- Price offer -->
             <div class="mb-3 p-4 pb-4">
                 <label for="price_offer" class="form-label fw-semibold">What price are you willing to pay?</label>
-                <input 
-                    type="number" 
-                    class="form-control" 
-                    id="price_offer" 
-                    name="price_offer" 
-                    placeholder="Enter your offer (USD)" 
-                    required
-                >
+                <input type="number" class="form-control" id="price_offer" name="price_offer"
+                    placeholder="Enter your offer (USD)" required>
                 <small class="text-muted">If the item is negotiable, suggest your price.</small>
             </div>
 
             <!-- Pickup location -->
             <div class="mb-3 p-3">
                 <label for="location" class="form-label fw-semibold">Preferred location to meet</label>
-                <input 
-                    type="text" 
-                    class="form-control" 
-                    id="location" 
-                    name="location" 
-                    placeholder="E.g., Miller steps, Bobs parking lot…" 
-                    required
-                >
+                <input type="text" class="form-control" id="location" name="location"
+                    placeholder="E.g., Miller steps, Bobs parking lot…" required>
             </div>
 
             <!-- Payment options -->
@@ -95,13 +84,8 @@
             <!-- Additional notes -->
             <div class="mb-3 p-3">
                 <label for="notes" class="form-label fw-semibold">Any additional notes for the seller?</label>
-                <textarea 
-                    class="form-control"
-                    id="notes"
-                    name="notes"
-                    rows="3"
-                    placeholder="E.g., I’m only free after 6 PM, please bring change…"
-                ></textarea>
+                <textarea class="form-control" id="notes" name="notes" rows="3"
+                    placeholder="E.g., I’m only free after 6 PM, please bring change…"></textarea>
             </div>
 
             <!-- Submit -->
@@ -124,7 +108,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-    <script src="/app/static/js/home.js"></script>
+    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 </body>
 
 </html>
