@@ -16,6 +16,7 @@ from .models import Item, db, User, Order
 import os
 from datetime import datetime
 from flask_mail import Message
+from .recommendations import RecommendationEngine
 
 # Create a new blueprint for main pages
 main = Blueprint("main", __name__)
@@ -46,6 +47,7 @@ def home():
             category_items=[],  # Skip category display during search
             recent_items=results,  # Reuse this section to show results
             current_search=search,
+            recommended_items=[]
         )
 
     # Default homepage (no search)
@@ -57,11 +59,14 @@ def home():
     category_items = [item for item in category_items if item]
     recent_items = Item.query.order_by(Item.created_at.desc()).limit(6).all()
 
+    recommended_items = RecommendationEngine.get_recommendations(current_user.id, limit=6)
+
     return render_template(
         "home.html",
         user=current_user,
         category_items=category_items,
         recent_items=recent_items,
+        recommended_items=recommended_items,
         current_search=None,
     )
 
@@ -209,7 +214,11 @@ def item_details(item_id):
     Displays detailed information about a specific item.
     """
     item = Item.query.get_or_404(item_id)
-    return render_template("item_details.html", item=item)
+
+    RecommendationEngine.track_item_view(current_user.id, item_id)
+    
+    similar_items = RecommendationEngine.get_similar_items(item_id, limit=6)
+    return render_template("item_details.html", item=item, similar_items=similar_items)
 
 
 @main.route("/seller/<int:seller_id>")
