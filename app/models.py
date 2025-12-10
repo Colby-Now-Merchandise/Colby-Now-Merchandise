@@ -86,3 +86,24 @@ class Order(db.Model):
 
     def __repr__(self):
         return f"<Order {self.item_id} (${self.price_offer})>"
+
+class ItemView(db.Model):
+    """Track when users view items"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable=False)
+    viewed_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    user = db.relationship('User', backref='item_views')
+    item = db.relationship('Item', backref='views')
+
+
+class UserCategoryPreference(db.Model):
+    """Track user preferences by category"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    category = db.Column(db.String(100), nullable=False)
+    score = db.Column(db.Float, default=0.0)  
+    
+    user = db.relationship('User', backref='category_preferences')
+    __table_args__ = (db.UniqueConstraint('user_id', 'category', name='unique_user_category'),)
