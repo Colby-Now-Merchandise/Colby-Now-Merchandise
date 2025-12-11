@@ -125,6 +125,8 @@ def buy_item():
         c[0] for c in db.session.query(Item.condition).distinct().all() if c[0]
     ]
 
+    favorite_ids = [fav.id for fav in current_user.favorites]
+
     return render_template(
         "buy_item.html",
         items=items,
@@ -137,6 +139,7 @@ def buy_item():
         current_search=search,
         current_sort=sort_by,
         item_count=len(items),
+        favorite_ids=favorite_ids,
     )
 
 
