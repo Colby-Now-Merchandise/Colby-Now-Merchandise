@@ -6,7 +6,7 @@
             <div style="width: 80px; height: 80px; flex-shrink: 0;">
                 {% if order.item.image_url %}
                 <img src="{{ url_for('static', filename=order.item.image_url) }}"
-                     class="w-100 h-100 rounded object-fit-cover">
+                    class="w-100 h-100 rounded object-fit-cover">
                 {% else %}
                 <div class="w-100 h-100 bg-light rounded d-flex align-items-center justify-content-center">
                     <i class="bi bi-image text-muted"></i>
@@ -21,16 +21,16 @@
                     Buyer: <strong>{{ order.buyer.name }}</strong>
 
                     {% if order.status == "pending" %}
-                        <span class="badge bg-warning ms-2">Pending</span>
-
-                    {% elif order.status == "paid_pending_pickup" %}
-                        <span class="badge bg-primary ms-2">Paid — Awaiting Pickup</span>
+                    <span class="badge bg-warning ms-2">Pending</span>
 
                     {% elif order.status == "approved" %}
-                        <span class="badge bg-success ms-2">Pickup Approved</span>
+                    <span class="badge bg-success ms-2">Approved</span>
 
-                    {% elif order.status == "delivered" %}
-                        <span class="badge bg-secondary ms-2">Completed</span>
+                    {% elif order.status == "completed" %}
+                    <span class="badge bg-secondary ms-2">Completed</span>
+
+                    {% elif order.status == "cancelled" %}
+                    <span class="badge bg-danger ms-2">Cancelled</span>
                     {% endif %}
                 </p>
 
@@ -49,8 +49,14 @@
                     </div>
 
                     <div class="col-6">
-                        <p class="mb-0 small text-muted">Payment</p>
-                        <p class="mb-0 small fw-medium">{{ order.payment_method }}</p>
+                        <p class="mb-0 small text-muted">Pickup Time</p>
+                        <p class="mb-0 small fw-medium">
+                            {% if order.pickup_time %}
+                            {{ order.pickup_time.strftime("%b %d, %I:%M %p") }}
+                            {% else %}
+                            Not specified
+                            {% endif %}
+                        </p>
                     </div>
 
                     {% if order.notes %}
@@ -65,28 +71,26 @@
             <div class="d-flex gap-2">
 
                 {% if order.status == "pending" %}
-                    <!-- Old negotiation system -->
-                    <form action="{{ url_for('main.handle_order', order_id=order.id, action='approve') }}" method="POST">
-                        <button class="btn btn-success btn-sm px-3">Approve</button>
-                    </form>
-                    <form action="{{ url_for('main.handle_order', order_id=order.id, action='reject') }}" method="POST">
-                        <button class="btn btn-outline-danger btn-sm px-3">Reject</button>
-                    </form>
-
-                {% elif order.status == "paid_pending_pickup" %}
-                    <!-- STEP 1: Approve pickup after payment -->
-                    <form action="{{ url_for('main.approve_pickup', order_id=order.id) }}" method="POST">
-                        <button class="btn btn-outline-primary btn-sm px-3">Approve Pickup</button>
-                    </form>
+                <!-- Approve or reject pending orders -->
+                <form action="{{ url_for('main.approve_pickup', order_id=order.id) }}" method="POST">
+                    <button class="btn btn-success btn-sm px-3">Approve</button>
+                </form>
+                <form action="{{ url_for('main.handle_order', order_id=order.id, action='reject') }}" method="POST">
+                    <button class="btn btn-outline-danger btn-sm px-3">Reject</button>
+                </form>
 
                 {% elif order.status == "approved" %}
-                    <!-- STEP 2: Complete order -->
-                    <form action="{{ url_for('main.complete_order', order_id=order.id) }}" method="POST">
-                        <button class="btn btn-success btn-sm px-3">Mark Completed</button>
-                    </form>
+                <!-- Mark as sold after pickup -->
+                <button class="btn btn-success btn-sm px-3" onclick="markAsSold({{ order.id }})">
+                    Mark Sold
+                </button>
 
-                {% else %}
-                    <span class="text-muted small">Processed</span>
+                {% elif order.status == "completed" %}
+                <span class="text-muted small"><i class="bi bi-check-circle"></i> Sold</span>
+
+                {% elif order.status == "cancelled" %}
+                <span class="text-muted small"><i class="bi bi-x-circle"></i> Cancelled</span>
+
                 {% endif %}
 
             </div>
