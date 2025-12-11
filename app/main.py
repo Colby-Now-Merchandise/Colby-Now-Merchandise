@@ -12,7 +12,10 @@ from flask import (
 
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from .models import Item, Order, User, RecentlyViewed, db
+from .models import Item, db, User, Order, Chat, RecentlyViewed
+from sqlalchemy import or_
+import pytz
+from .search_utils import generate_embedding
 import os
 from datetime import datetime
 from flask_mail import Message
@@ -28,6 +31,7 @@ def landing():
     """
     return render_template("landing.html")
 
+
 @main.route("/home")
 @login_required
 def home():
@@ -35,26 +39,6 @@ def home():
     Displays the homepage after a successful login or signup.
     Supports searching for items by keyword.
     """
-    search = request.args.get("search", "").strip()
-
-    if search:
-        # User performed a search — show filtered results
-        results = (
-            Item.search(search)
-            .filter_by(is_active=True)
-            .order_by(Item.created_at.desc())
-            .limit(12)
-            .all()
-        )
-
-        return render_template(
-            "home.html",
-            user=current_user,
-            category_items=[],
-            recent_items=results,
-            current_search=search,
-        )
-
     # Default homepage
     categories = ["electronics", "clothing", "furniture", "books", "miscellaneous"]
 
@@ -79,7 +63,6 @@ def home():
         user=current_user,
         category_items=category_items,
         recent_items=recent_items,
-        current_search=None,
     )
 
 
@@ -92,7 +75,28 @@ def buy_item():
     search = request.args.get("search", type=str)
     sort_by = request.args.get("sort_by", default="newest", type=str)
 
-    query = Item.search(search).filter_by(is_active=True)
+    # We'll use a base query first
+    query = Item.query.filter_by(is_active=True)
+
+    # If search provided, we might need semantic search
+    # BUT semantic_search returns a list, not a query object.
+    # To combine with other filters (category, etc), we might need a hybrid approach
+    # OR helper method. For now, let's keep it simple:
+    # If search is present, we get IDs from semantic search and filter by them.
+
+    if search:
+        semantic_results = Item.semantic_search(search, limit=50)  # Get top 50 relevant
+        if not semantic_results:
+            # If no semantic results, maybe fall back to empty or keep broad?
+            # Let's result in empty
+            query = query.filter(db.false())
+        else:
+            relevant_ids = [item.id for item in semantic_results]
+            query = query.filter(Item.id.in_(relevant_ids))
+
+            # Preserve semantic order if possible?
+            # SQL "IN" doesn't preserve order.
+            # We will sort by created_at etc below anyway unless specific sort requested.
 
     if categories_selected:
         query = query.filter(Item.category.in_(categories_selected))
@@ -124,6 +128,8 @@ def buy_item():
         c[0] for c in db.session.query(Item.condition).distinct().all() if c[0]
     ]
 
+    favorite_ids = [fav.id for fav in current_user.favorites]
+
     return render_template(
         "buy_item.html",
         items=items,
@@ -136,6 +142,7 @@ def buy_item():
         current_search=search,
         current_sort=sort_by,
         item_count=len(items),
+        favorite_ids=favorite_ids,
     )
 
 
@@ -208,6 +215,7 @@ def post_item():
                 price=price,
                 image_url=image_url,
                 seller_id=current_user.id,
+                embedding=generate_embedding(f"{title} {description}"),
             )
 
             db.session.add(new_item)
@@ -344,6 +352,9 @@ def edit_item(item_id):
             except ValueError:
                 flash("Invalid price. Please enter a valid number.", "danger")
                 return redirect(url_for("main.edit_item", item_id=item.id))
+
+            # Update embedding
+            item.embedding = generate_embedding(f"{item.title} {item.description}")
 
             if "image" in request.files:
                 file = request.files["image"]
@@ -593,6 +604,88 @@ You have received a new message from the contact form:
     return render_template("contact_us.html")
 
 
+@main.route("/chat/<int:receiver_id>")
+@login_required
+def chat(receiver_id):
+    seller = User.query.get_or_404(receiver_id)
+
+    Chat.query.filter_by(
+        sender_id=receiver_id,
+        receiver_id=current_user.id,
+        is_read=False
+    ).update({"is_read": True})
+
+    db.session.commit()
+
+    return render_template("chat.html", receiver_id=receiver_id, receiver=seller)
+
+
+@main.route("/send_message", methods=["POST"])
+@login_required
+def send_message():
+    data = request.get_json()
+
+    if not data or not data.get("content"):
+        return jsonify({"success": False}), 400
+
+    msg = Chat(
+        sender_id=current_user.id,
+        receiver_id=data["receiver_id"],
+        content=data["content"]
+    )
+    db.session.add(msg)
+    db.session.commit()
+    return jsonify({"success": True})
+
+
+@main.route("/get_messages/<int:user_id>")
+@login_required
+def get_messages(user_id):
+    ny_tz = pytz.timezone("America/New_York")
+
+    msgs = Chat.query.filter(
+        ((Chat.sender_id == current_user.id) & (Chat.receiver_id == user_id)) |
+        ((Chat.sender_id == user_id) & (Chat.receiver_id == current_user.id))
+    ).order_by(Chat.timestamp).all()
+
+    return jsonify([
+        {
+            "sender": m.sender_id,
+            "content": m.content,
+            "time": m.timestamp
+                .replace(tzinfo=pytz.utc)
+                .astimezone(ny_tz)
+                .strftime("%b %d • %I:%M %p")
+        }
+        for m in msgs
+    ])
+
+@main.route("/inbox")
+@login_required
+def inbox():
+    users = (
+        User.query
+        .join(
+            Chat,
+            or_(
+                Chat.sender_id == User.id,
+                Chat.receiver_id == User.id
+            )
+        )
+        .filter(
+            or_(
+                Chat.sender_id == current_user.id,
+                Chat.receiver_id == current_user.id
+            )
+        )
+        .filter(User.id != current_user.id)
+        .distinct()
+        .all()
+    )
+
+    return render_template("inbox.html", conversations=users)
+ 
+ 
 @main.route("/profile")
 @login_required
 def profile():

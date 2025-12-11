@@ -1,8 +1,8 @@
 from flask import Flask, app, redirect, url_for, flash
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_mail import Mail
 from flask_dance.contrib.google import make_google_blueprint
-from .models import db, User
+from .models import db, User, Chat
 from .auth import auth
 from .main import main
 import os
@@ -55,6 +55,9 @@ def create_app():
     migrate.init_app(app, db)
     from . import models
 
+    with app.app_context():
+        db.create_all()
+
     # Login manager setup
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"
@@ -90,6 +93,16 @@ def create_app():
             "danger",
         )
         return redirect(url_for("main.post_item")), 413
+
+    @app.context_processor
+    def inject_unread_count():
+        if current_user.is_authenticated:
+            count = Chat.query.filter_by(
+                receiver_id=current_user.id,
+                is_read=False
+            ).count()
+            return dict(unread_count=count)
+        return dict(unread_count=0)
 
     return app
 
