@@ -1,6 +1,8 @@
 # Colby-Now-Merchandise
-<center> <img src="app/static/images/colbynow_merch_logo.png" width=300px></center>
+
 Authors: Francis O’Hara Aidoo, Rose Agyapong, Ninh Giang Nguyen, Simon Lartey
+
+<center> <img src="app/static/images/colbynow_merch_logo.png" width=300px></center>
 
 👉 Live App: https://colbynowmerchandise.com/  
 👉 Live Demo: [Watch here](https://drive.google.com/drive/u/0/home)
