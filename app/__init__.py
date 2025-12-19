@@ -9,6 +9,8 @@ import os
 from werkzeug.exceptions import RequestEntityTooLarge
 from flask_migrate import Migrate
 from dotenv import load_dotenv
+import boto3
+from botocore.config import Config
 
 load_dotenv()
 
@@ -48,12 +50,21 @@ def create_app():
     app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
     app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
 
+    # Initialize AWS Boto3 client for storing images
+    s3 = boto3.client(
+        service_name="s3",
+        endpoint_url=os.getenv("AWS_ENDPOINT_URL"),
+        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+        config=Config(signature_version="s3v4"),
+    )
+    app.s3_client = s3
+    app.s3_bucket_id = os.getenv("AWS_S3_BUCKET_ID")
 
     # Initialize database and mail, migrate
     db.init_app(app)
     mail.init_app(app)
     migrate.init_app(app, db)
-    from . import models
 
     # Login manager setup
     login_manager = LoginManager()

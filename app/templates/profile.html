@@ -50,7 +50,8 @@
                 <div class="card shadow-sm p-4 text-center profile-card">
 
                     <!-- Profile Image -->
-                    <img src="{{ url_for('static', filename=user.profile_image or 'images/default_user_profile.png') }}"
+                    <img src="{{ user.profile_image_url }}"
+                        onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/default_user_profile.png') }}';"
                         class="rounded-circle mb-3 mx-auto d-block" width="150" height="150" alt="Profile Image">
 
                     <h4 class="fw-bold mt-2">{{ user.first_name }} {{ user.last_name }}</h4>
