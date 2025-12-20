@@ -19,8 +19,16 @@
             min-height: 100vh;
         }
 
-        input[type="file"] {
-            display: none;
+        .form-control::file-selector-button {
+            background-color: #3b4a7d;
+            color: white;
+            border: none;
+        }
+
+        #file-upload:hover::file-selector-button {
+            background-color: #2a365d;
+            color: white;
+            border: none;
         }
 
         main {
@@ -60,12 +68,8 @@
                         <div>
                             <label class="form-label fw-semibold">Upload Images</label>
                             <div class="d-flex align-items-center gap-3">
-                                <label for="file-upload" class="btn btn-primary"
-                                    style="background-color: #3b4a7d; border-color: #3b4a7d;">
-                                    <span>Choose File</span>
-                                </label>
-                                <input id="file-upload" name="image" type="file" accept="image/*" required>
-                                <span class="text-secondary" id="file-chosen">None selected</span>
+                                <input id="file-upload" name="image" type="file" class="form-control"
+                                    accept="image/png, image/jpeg, image/jpg, image/gif, image/webp" required>
                             </div>
                             <small class="text-muted">Accepted formats: PNG, JPG, JPEG, GIF, WEBP (Max 16MB)</small>
                         </div>
@@ -181,18 +185,25 @@
         crossorigin="anonymous"></script>
 
     <script>
-        // Update file name display when a file is selected
-        const fileInput = document.getElementById('file-upload');
-        const fileChosen = document.getElementById('file-chosen');
-
-        fileInput.addEventListener('change', function () {
-            if (this.files && this.files.length > 0) {
-                fileChosen.textContent = this.files[0].name;
-            } else {
-                fileChosen.textContent = 'None selected';
+        // enforce file types
+        fileInput = document.querySelector("#file-upload");
+        fileInput.addEventListener("change", (event) => {
+            selected_file = fileInput.files[0];
+            valid_types = ["image/jpg", "image/png", "image/jpeg", "image/gif", "image/webp"]
+            if (!valid_types.includes(selected_file.type)) {
+                alert("");
             }
-        });
+        })
+
+        // upload image to cloud storage bucket
+        form = document.querySelector("form");
+        form.addEventListener("submit", (event) => {
+            image_file = document.querySelector("#file-upload").files[0];
+            image_file.
+        })
+
     </script>
+
 </body>
 
 </html>
