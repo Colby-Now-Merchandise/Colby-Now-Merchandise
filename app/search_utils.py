@@ -21,16 +21,14 @@ def get_model():
 
 
 def generate_embedding(text):
-    """
-    Generates a dense vector embedding for the given text.
-    Returns a numpy array (or list) suitable for storage.
-    """
-    if not text:
+    try:
+        from sentence_transformers import SentenceTransformer
+        model = SentenceTransformer("all-MiniLM-L6-v2")
+        return model.encode(text).tolist()
+    except Exception:
+        # Embeddings disabled if dependency missing
         return None
-    model = get_model()
-    # dimensions: 384
-    embedding = model.encode(text)
-    return embedding
+
 
 
 def cosine_similarity(vec_a, vec_b):
