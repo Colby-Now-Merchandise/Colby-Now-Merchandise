@@ -6,28 +6,28 @@ import pytz
 
 @pytest.fixture
 def two_users(app, client):
-    with app.app_context():
-        u1 = User(
-            email="u1@colby.edu",
-            password="x",
-            first_name="A",
-            last_name="One",
-            is_verified=True,
-        )
-        u2 = User(
-            email="u2@colby.edu",
-            password="x",
-            first_name="B",
-            last_name="Two",
-            is_verified=True,
-        )
-        db.session.add_all([u1, u2])
-        db.session.commit()
+    # Removed with app.app_context(): relying on session-scoped app context from conftest
+    u1 = User(
+        email="u1@colby.edu",
+        password="x",
+        first_name="A",
+        last_name="One",
+        is_verified=True,
+    )
+    u2 = User(
+        email="u2@colby.edu",
+        password="x",
+        first_name="B",
+        last_name="Two",
+        is_verified=True,
+    )
+    db.session.add_all([u1, u2])
+    db.session.commit()
 
-        # login u1
-        client.post("/auth/login", data={"email": u1.email, "password": "x"})
+    # login u1
+    client.post("/auth/login", data={"email": u1.email, "password": "x"})
 
-        return u1, u2
+    return u1, u2
 
 
 # --------------------------------------
@@ -81,10 +81,10 @@ def test_get_messages_empty(client, two_users):
 # --------------------------------------
 def test_get_messages_with_data(client, two_users, app):
     u1, u2 = two_users
-    with app.app_context():
-        msg = Chat(sender_id=u1.id, receiver_id=u2.id, content="test")
-        db.session.add(msg)
-        db.session.commit()
+
+    msg = Chat(sender_id=u1.id, receiver_id=u2.id, content="test")
+    db.session.add(msg)
+    db.session.commit()
 
     resp = client.get(f"/get_messages/{u2.id}")
     assert len(resp.json) == 1
@@ -96,11 +96,11 @@ def test_get_messages_with_data(client, two_users, app):
 # --------------------------------------
 def test_get_messages_time_format(client, two_users, app):
     u1, u2 = two_users
-    with app.app_context():
-        t = datetime.utcnow() - timedelta(hours=1)
-        msg = Chat(sender_id=u1.id, receiver_id=u2.id, content="time", timestamp=t)
-        db.session.add(msg)
-        db.session.commit()
+
+    t = datetime.utcnow() - timedelta(hours=1)
+    msg = Chat(sender_id=u1.id, receiver_id=u2.id, content="time", timestamp=t)
+    db.session.add(msg)
+    db.session.commit()
 
     resp = client.get(f"/get_messages/{u2.id}")
     assert "•" in resp.json[0]["time"]  # format "Jan 01 • 12:00 PM"
@@ -119,10 +119,10 @@ def test_inbox_empty(client, two_users):
 # --------------------------------------
 def test_inbox_with_messages(client, two_users, app):
     u1, u2 = two_users
-    with app.app_context():
-        c = Chat(sender_id=u1.id, receiver_id=u2.id, content="hi")
-        db.session.add(c)
-        db.session.commit()
+
+    c = Chat(sender_id=u1.id, receiver_id=u2.id, content="hi")
+    db.session.add(c)
+    db.session.commit()
 
     resp = client.get("/inbox")
     assert b"Two" in resp.data  # u2 displayed
@@ -156,17 +156,17 @@ def test_send_message_invalid_receiver(client, two_users):
 # send_message — not logged in
 # --------------------------------------
 def test_send_message_not_logged_in(client, app):
-    with app.app_context():
-        u = User(
-            email="test@colby.edu",
-            password="x",
-            first_name="T",
-            last_name="U",
-            is_verified=True,
-        )
-        db.session.add(u)
-        db.session.commit()
-        receiver_id = u.id
+
+    u = User(
+        email="test@colby.edu",
+        password="x",
+        first_name="T",
+        last_name="U",
+        is_verified=True,
+    )
+    db.session.add(u)
+    db.session.commit()
+    receiver_id = u.id
 
     resp = client.post(
         "/send_message",
@@ -180,13 +180,13 @@ def test_send_message_not_logged_in(client, app):
 # --------------------------------------
 def test_get_messages_multiple(client, two_users, app):
     u1, u2 = two_users
-    with app.app_context():
-        msgs = [
-            Chat(sender_id=u1.id, receiver_id=u2.id, content="msg1"),
-            Chat(sender_id=u2.id, receiver_id=u1.id, content="msg2"),
-        ]
-        db.session.add_all(msgs)
-        db.session.commit()
+
+    msgs = [
+        Chat(sender_id=u1.id, receiver_id=u2.id, content="msg1"),
+        Chat(sender_id=u2.id, receiver_id=u1.id, content="msg2"),
+    ]
+    db.session.add_all(msgs)
+    db.session.commit()
 
     resp = client.get(f"/get_messages/{u2.id}")
     assert len(resp.json) == 2
@@ -199,12 +199,12 @@ def test_get_messages_multiple(client, two_users, app):
 # --------------------------------------
 def test_get_messages_timezone(client, two_users, app):
     u1, u2 = two_users
-    with app.app_context():
-        tz = pytz.timezone("US/Eastern")
-        t = tz.localize(datetime(2025, 12, 23, 12, 0, 0))
-        msg = Chat(sender_id=u1.id, receiver_id=u2.id, content="tz test", timestamp=t)
-        db.session.add(msg)
-        db.session.commit()
+
+    tz = pytz.timezone("US/Eastern")
+    t = tz.localize(datetime(2025, 12, 23, 12, 0, 0))
+    msg = Chat(sender_id=u1.id, receiver_id=u2.id, content="tz test", timestamp=t)
+    db.session.add(msg)
+    db.session.commit()
 
     resp = client.get(f"/get_messages/{u2.id}")
     assert resp.json[0]["time"]  # Ensure time is formatted correctly
@@ -215,21 +215,21 @@ def test_get_messages_timezone(client, two_users, app):
 # --------------------------------------
 def test_inbox_multiple_conversations(client, two_users, app):
     u1, u2 = two_users
-    with app.app_context():
-        u3 = User(
-            email="u3@colby.edu",
-            password="x",
-            first_name="C",
-            last_name="Three",
-            is_verified=True,
-        )
-        db.session.add(u3)
-        msgs = [
-            Chat(sender_id=u1.id, receiver_id=u2.id, content="to u2"),
-            Chat(sender_id=u1.id, receiver_id=u3.id, content="to u3"),
-        ]
-        db.session.add_all(msgs)
-        db.session.commit()
+
+    u3 = User(
+        email="u3@colby.edu",
+        password="x",
+        first_name="C",
+        last_name="Three",
+        is_verified=True,
+    )
+    db.session.add(u3)
+    msgs = [
+        Chat(sender_id=u1.id, receiver_id=u2.id, content="to u2"),
+        Chat(sender_id=u1.id, receiver_id=u3.id, content="to u3"),
+    ]
+    db.session.add_all(msgs)
+    db.session.commit()
 
     resp = client.get("/inbox")
     assert b"Two" in resp.data
@@ -257,43 +257,43 @@ def test_chat_self(client, two_users):
 # User model — basic creation and verification
 # --------------------------------------
 def test_user_creation(app):
-    with app.app_context():
-        u = User(
-            email="new@colby.edu",
-            password="pass",
-            first_name="New",
-            last_name="User",
-            is_verified=False,
-        )
-        db.session.add(u)
-        db.session.commit()
-        assert u.id is not None
-        assert not u.is_verified
+
+    u = User(
+        email="new@colby.edu",
+        password="pass",
+        first_name="New",
+        last_name="User",
+        is_verified=False,
+    )
+    db.session.add(u)
+    db.session.commit()
+    assert u.id is not None
+    assert not u.is_verified
 
 
 # --------------------------------------
 # Chat model — timestamp default
 # --------------------------------------
 def test_chat_timestamp_default(app):
-    with app.app_context():
-        u1 = User(
-            email="a@colby.edu",
-            password="x",
-            first_name="A",
-            last_name="A",
-            is_verified=True,
-        )
-        u2 = User(
-            email="b@colby.edu",
-            password="x",
-            first_name="B",
-            last_name="B",
-            is_verified=True,
-        )
-        db.session.add_all([u1, u2])
-        db.session.commit()
 
-        msg = Chat(sender_id=u1.id, receiver_id=u2.id, content="test")
-        db.session.add(msg)
-        db.session.commit()
-        assert msg.timestamp is not None
+    u1 = User(
+        email="a@colby.edu",
+        password="x",
+        first_name="A",
+        last_name="A",
+        is_verified=True,
+    )
+    u2 = User(
+        email="b@colby.edu",
+        password="x",
+        first_name="B",
+        last_name="B",
+        is_verified=True,
+    )
+    db.session.add_all([u1, u2])
+    db.session.commit()
+
+    msg = Chat(sender_id=u1.id, receiver_id=u2.id, content="test")
+    db.session.add(msg)
+    db.session.commit()
+    assert msg.timestamp is not None

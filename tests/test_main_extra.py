@@ -12,37 +12,37 @@ EMBED_VECTOR = [0.1, 0.2, 0.3]
 # ------------------------------------------
 @pytest.fixture
 def logged_user(client, app):
-    with app.app_context():
-        u = User(
-            email="extra@colby.edu",
-            password="x",
-            first_name="Extra",
-            last_name="User",
-            is_verified=True,
-        )
-        db.session.add(u)
-        db.session.commit()
-        client.post("/auth/login", data={"email": u.email, "password": "x"})
-        return u
+
+    u = User(
+        email="extra@colby.edu",
+        password="x",
+        first_name="Extra",
+        last_name="User",
+        is_verified=True,
+    )
+    db.session.add(u)
+    db.session.commit()
+    client.post("/auth/login", data={"email": u.email, "password": "x"})
+    return u
 
 
 @pytest.fixture
 def item(app, logged_user):
-    with app.app_context():
-        it = Item(
-            title="Extra Item",
-            description="desc",
-            category="electronics",
-            size="L",
-            seller_type="student",
-            condition="good",
-            price=15.0,
-            seller_id=logged_user.id,
-            embedding=EMBED_VECTOR,
-        )
-        db.session.add(it)
-        db.session.commit()
-        return it
+
+    it = Item(
+        title="Extra Item",
+        description="desc",
+        category="electronics",
+        size="L",
+        seller_type="student",
+        condition="good",
+        price=15.0,
+        seller_id=logged_user.id,
+        embedding=EMBED_VECTOR,
+    )
+    db.session.add(it)
+    db.session.commit()
+    return it
 
 
 # ------------------------------------------
@@ -127,11 +127,11 @@ def test_my_listings_multisearch(client, logged_user, item):
 # ------------------------------------------
 @pytest.fixture
 def order(app, logged_user, item):
-    with app.app_context():
-        o = Order(buyer_id=logged_user.id, item_id=item.id, location="L", notes="N/A")
-        db.session.add(o)
-        db.session.commit()
-        return o
+
+    o = Order(buyer_id=logged_user.id, item_id=item.id, location="L", notes="N/A")
+    db.session.add(o)
+    db.session.commit()
+    return o
 
 
 def test_handle_order_invalid_action(client, logged_user, order):
@@ -149,16 +149,16 @@ def test_handle_order_404(client, logged_user):
 # ------------------------------------------
 def test_edit_item_unauthorized(client, logged_user, item, app):
     # create another user
-    with app.app_context():
-        other = User(
-            email="other@colby.edu",
-            password="x",
-            first_name="O",
-            last_name="U",
-            is_verified=True,
-        )
-        db.session.add(other)
-        db.session.commit()
+
+    other = User(
+        email="other@colby.edu",
+        password="x",
+        first_name="O",
+        last_name="U",
+        is_verified=True,
+    )
+    db.session.add(other)
+    db.session.commit()
 
     client.post("/auth/login", data={"email": "other@colby.edu", "password": "x"})
 
@@ -195,16 +195,16 @@ def test_edit_item_failure(mock_emb, client, logged_user, item):
 # /delete_item unauthorized + 404
 # ------------------------------------------
 def test_delete_item_unauthorized(client, logged_user, item, app):
-    with app.app_context():
-        other = User(
-            email="del@colby.edu",
-            password="x",
-            first_name="D",
-            last_name="L",
-            is_verified=True,
-        )
-        db.session.add(other)
-        db.session.commit()
+
+    other = User(
+        email="del@colby.edu",
+        password="x",
+        first_name="D",
+        last_name="L",
+        is_verified=True,
+    )
+    db.session.add(other)
+    db.session.commit()
 
     client.post("/auth/login", data={"email": "del@colby.edu", "password": "x"})
     resp = client.post(f"/delete_item/{item.id}", follow_redirects=True)

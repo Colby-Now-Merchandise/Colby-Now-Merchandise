@@ -60,7 +60,7 @@ def test_item_search_no_term_returns_query(app):
 
 def test_item_search_with_term(app):
     u = User(
-        name="Bob",
+        first_name="Bob",
         email="bob@colby.edu",
         password="hashed",
         is_verified=True,
@@ -98,13 +98,13 @@ def test_item_search_with_term(app):
 
 def test_order_and_chat_models(app):
     seller = User(
-        name="Seller",
+        first_name="Seller",
         email="seller@colby.edu",
         password="x",
         is_verified=True,
     )
     buyer = User(
-        name="Buyer",
+        first_name="Buyer",
         email="buyer@colby.edu",
         password="y",
         is_verified=True,
@@ -128,9 +128,7 @@ def test_order_and_chat_models(app):
     order = Order(
         buyer_id=buyer.id,
         item_id=item.id,
-        price_offer=90.0,
         location="Library",
-        payment_method="cash",
         notes="After class",
         status="pending",
     )
