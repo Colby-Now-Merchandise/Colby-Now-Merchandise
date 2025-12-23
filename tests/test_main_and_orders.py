@@ -162,7 +162,9 @@ def test_handle_order_approve_and_reject(client, logged_in_user, sample_item, ap
         assert order.status == "rejected"
 
 
-def test_handle_order_unauthorized(client, logged_in_user, sample_item, app, create_user):
+def test_handle_order_unauthorized(
+    client, logged_in_user, sample_item, app, create_user
+):
     # Another user as seller
     seller, _ = create_user(email="other_seller@colby.edu")
     with app.app_context():
@@ -343,9 +345,7 @@ def test_confirm_order_authorized(client, logged_in_user, sample_item, app):
 
 def test_favorites_add_and_remove(client, logged_in_user, sample_item, app):
     # Add favorite
-    resp = client.post(
-        f"/favorites/add/{sample_item.id}", follow_redirects=True
-    )
+    resp = client.post(f"/favorites/add/{sample_item.id}", follow_redirects=True)
     assert b"Added to favorites" in resp.data
 
     with app.app_context():
@@ -473,7 +473,9 @@ def test_approve_pickup_authorized(client, logged_in_user, sample_item, app):
         assert order.item.is_active is False
 
 
-def test_approve_pickup_unauthorized(client, logged_in_user, sample_item, app, create_user):
+def test_approve_pickup_unauthorized(
+    client, logged_in_user, sample_item, app, create_user
+):
     # Another user is seller
     seller, _ = create_user(email="other_seller2@colby.edu")
     with app.app_context():
@@ -600,3 +602,25 @@ def test_cosine_similarity_basic():
     assert cosine_similarity(None, v2) == 0.0
     assert cosine_similarity(v1, None) == 0.0
     assert cosine_similarity([0, 0], [1, 2]) == 0.0
+
+
+def test_approve_pickup_already_approved(client, logged_in_user, sample_item, app):
+    """
+    Covers the 'if order.status != pending' branch in main.approve_pickup.
+    Ensures that an order already in 'approved' status cannot be approved again.
+    """
+    with app.app_context():
+        sample_item.seller_id = logged_in_user.id
+        order = Order(
+            buyer_id=999,
+            item_id=sample_item.id,
+            location="Miller Library",
+            status="approved",
+        )
+        db.session.add(order)
+        db.session.commit()
+        oid = order.id
+
+    resp = client.post(f"/approve_pickup/{oid}", follow_redirects=True)
+
+    assert b"This order cannot be approved" in resp.data

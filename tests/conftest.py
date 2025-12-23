@@ -4,6 +4,7 @@ from flask import current_app
 from werkzeug.security import generate_password_hash
 
 import sys, os
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 os.environ.setdefault("SECRET_KEY", "test-secret-key")
@@ -20,27 +21,16 @@ from app.models import db, User, Item, Order, Chat
 
 @pytest.fixture(scope="session")
 def app():
-    # Use in-memory SQLite DB for tests
     os.environ["DATABASE_URL"] = "sqlite:///:memory:"
-    os.environ.setdefault("SECRET_KEY", "test_secret_key")
-
     app = create_app()
     app.config["TESTING"] = True
     app.config["WTF_CSRF_ENABLED"] = False
 
-    # Create tables
     with app.app_context():
         db.create_all()
-
-    # Global app context for tests
-    ctx = app.app_context()
-    ctx.push()
-
-    yield app
-
-    db.session.remove()
-    db.drop_all()
-    ctx.pop()
+        yield app
+        db.session.remove()
+        db.drop_all()
 
 
 @pytest.fixture
@@ -72,6 +62,7 @@ def mock_mail_send(monkeypatch, app):
     with app.app_context():
         mail_ext = current_app.extensions.get("mail")
         if mail_ext:
+
             def dummy_send(msg):
                 # Could append to a list for inspection if needed
                 return None
@@ -188,5 +179,3 @@ def sample_chat_pair(create_user):
     user1, _ = create_user(email="chat1@colby.edu", first_name="Chat", last_name="One")
     user2, _ = create_user(email="chat2@colby.edu", first_name="Chat", last_name="Two")
     return user1, user2
-
-

@@ -128,9 +128,7 @@ def test_my_listings_multisearch(client, logged_user, item):
 @pytest.fixture
 def order(app, logged_user, item):
     with app.app_context():
-        o = Order(
-            buyer_id=logged_user.id, item_id=item.id, location="L", notes="N/A"
-        )
+        o = Order(buyer_id=logged_user.id, item_id=item.id, location="L", notes="N/A")
         db.session.add(o)
         db.session.commit()
         return o
@@ -218,8 +216,37 @@ def test_delete_item_404(client, logged_user):
     assert resp.status_code == 404
 
 
-# ------------------------------------------
-# /order POST: missing location + not found
-# ------------------------------------------
-def test_order_missing_location(client, logged_user, item):
-    resp
+def test_buy_item_no_semantic_results(client, logged_user, monkeypatch):
+    """Force semantic search to return empty list to cover the 'if not semantic_results' block."""
+    from app.models import Item
+
+    monkeypatch.setattr(Item, "semantic_search", lambda *args, **kwargs: [])
+
+    resp = client.get("/buy_item?search=anything")
+    assert resp.status_code == 200
+    assert b"Test Item" not in resp.data
+
+
+def test_post_item_missing_price(client, logged_user):
+    """Cover the 'if not price_str' branch."""
+    resp = client.post(
+        "/post-item", data={"title": "No Price Item"}, follow_redirects=True
+    )
+    assert b"Price is required" in resp.data
+
+
+def test_update_profile_with_image(client, logged_user):
+    """Cover the profile image upload logic."""
+    data = {
+        "first_name": "New",
+        "last_name": "Name",
+        "profile_image": (io.BytesIO(b"fake image data"), "test.png"),
+    }
+    resp = client.post(
+        "/update_profile",
+        data=data,
+        content_type="multipart/form-data",
+        follow_redirects=True,
+    )
+    assert resp.status_code == 200
+    assert logged_user.profile_image is not None

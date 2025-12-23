@@ -310,3 +310,55 @@ def test_google_login_creates_and_logs_in_user(client, monkeypatch, app):
         u = User.query.filter_by(email="googleuser@colby.edu").first()
         assert u is not None
         assert u.is_verified is True
+
+
+def test_signup_missing_fields(client):
+    """Cover empty form submissions in signup."""
+    resp = client.post("/auth/signup", data={}, follow_redirects=True)
+    assert b"Please use your Colby College email address" in resp.data
+
+
+def test_login_timing_protection(client):
+    """Exercises the 'if not user' block that runs a dummy hash check."""
+    resp = client.post(
+        "/auth/login",
+        data={"email": "nonexistent@colby.edu", "password": "somepassword"},
+        follow_redirects=True,
+    )
+    assert b"Invalid email or password" in resp.data
+
+
+def test_google_login_non_colby(client, monkeypatch):
+    """Tests the restriction on non-Colby Google accounts."""
+    from app import auth as auth_module
+
+    class DummyGoogle:
+        authorized = True
+
+        def get(self, url):
+            class Resp:
+                def json(self):
+                    return {"email": "stranger@gmail.com", "name": "Evil Hacker"}
+
+            return Resp()
+
+    monkeypatch.setattr(auth_module, "google", DummyGoogle())
+    resp = client.get("/auth/google", follow_redirects=True)
+    assert b"Please use your @colby.edu email address" in resp.data
+
+
+def test_google_login_redirects_when_not_authorized(client, monkeypatch):
+    import app.auth as auth_logic_module
+
+    class DummyGoogle:
+        @property
+        def authorized(self):
+            return False
+
+        def login(self):
+            return "redirect-to-google"
+
+    monkeypatch.setattr(auth_logic_module, "google", DummyGoogle())
+
+    resp = client.get("/auth/google")
+    assert resp.status_code in (302, 303)

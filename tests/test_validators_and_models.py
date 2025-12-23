@@ -17,16 +17,17 @@ def test_is_strong_password_valid():
 
 
 def test_is_strong_password_invalid_variants():
-    assert not is_strong_password("short1!")              # too short
-    assert not is_strong_password("alllowercase123!")     # no uppercase
-    assert not is_strong_password("ALLUPPERCASE123!")     # no lowercase
-    assert not is_strong_password("NoNumber!!!!!")        # no number
-    assert not is_strong_password("NoSpecialChar1234")    # no special
+    assert not is_strong_password("short1!")  # too short
+    assert not is_strong_password("alllowercase123!")  # no uppercase
+    assert not is_strong_password("ALLUPPERCASE123!")  # no lowercase
+    assert not is_strong_password("NoNumber!!!!!")  # no number
+    assert not is_strong_password("NoSpecialChar1234")  # no special
 
 
 def test_user_and_item_repr(app):
     u = User(
-        name="Alice",
+        first_name="Alice",
+        last_name="Smith",
         email="alice@colby.edu",
         password="hashed",
         is_verified=True,
@@ -148,3 +149,24 @@ def test_order_and_chat_models(app):
 
     assert msg in buyer.messages_sent.all()
     assert msg in seller.messages_received.all()
+
+
+def test_semantic_search_branches(app, sample_item):
+    with app.app_context():
+        results = Item.semantic_search(None)
+        assert len(results) >= 1
+
+        sample_item.embedding = None
+        db.session.commit()
+        results = Item.semantic_search("technology")
+        assert results == []
+
+
+def test_user_full_name_property(app):
+    with app.app_context():
+        u1 = User(first_name="OnlyFirst")
+        u2 = User(last_name="OnlyLast")
+        u3 = User()
+        assert u1.full_name == "OnlyFirst"
+        assert u2.full_name == "OnlyLast"
+        assert u3.full_name == "Unknown"
