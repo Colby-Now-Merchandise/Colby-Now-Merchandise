@@ -16,6 +16,7 @@ from app.services.auth_service import (
     generate_password_reset,
     reset_password_with_token,
 )
+from werkzeug.security import generate_password_hash
 from flask_login import login_user, logout_user, login_required
 from .models import User, db
 from flask_dance.contrib.google import google
