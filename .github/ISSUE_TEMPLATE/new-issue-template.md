@@ -8,21 +8,16 @@ assignees: ''
 
 ---
 
-## 🛑 Problem
-[Describe the issue or bug. What is currently happening?]
+## 📝 Description
+[Describe the issue or feature request.]
 
-## 💡 Proposed Solution
-[How do you suggest we fix this? Describe the desired behavior or outcome.]
+## 🛠️ Steps to Reproduce (if applicable)
+1.
+2.
+3.
 
-## 🛠️ Steps to Reproduce
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+## � Proposed Solution (optional)
+[If you have a suggestion on how to fix this issue, let us know!]
 
-## 📋 Checklist
-- [ ] I have searched existing issues to avoid duplicates.
-- [ ] This issue follows the project's contribution guidelines.
-
-## 📎 Additional Context
-[Add any other context, screenshots, or logs about the problem here.]
+## �📎 Additional Context
+[Add any other context, screenshots, or logs here.]
