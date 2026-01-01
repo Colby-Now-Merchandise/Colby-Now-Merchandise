@@ -22,9 +22,7 @@ def get_model():
 
 def generate_embedding(text):
     try:
-        from sentence_transformers import SentenceTransformer
-
-        model = SentenceTransformer("all-MiniLM-L6-v2")
+        model = get_model()
         return model.encode(text).tolist()
     except Exception:
         # Embeddings disabled if dependency missing
