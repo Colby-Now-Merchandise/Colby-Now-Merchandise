@@ -1,5 +1,5 @@
 # tests/test_validators_models.py
-from app.validators import is_valid_email, is_strong_password
+from app.utils.validators import is_valid_email, is_strong_password
 from app.models import User, Item, Order, Chat, db
 from datetime import datetime
 

@@ -5,7 +5,7 @@ from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from flask_mail import Message
 from app.models import User, db
-from app.validators import is_strong_password
+from app.utils.validators import is_strong_password
 import os
 
 

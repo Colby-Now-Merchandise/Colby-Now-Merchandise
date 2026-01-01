@@ -16,7 +16,7 @@ from datetime import datetime
 import os
 
 from app.models import Item, db, RecentlyViewed
-from app.search_utils import generate_embedding
+from app.utils.search_utils import generate_embedding
 from .responses import (
     success_response,
     error_response,

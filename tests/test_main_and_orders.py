@@ -2,7 +2,7 @@ from datetime import datetime
 
 from flask import current_app
 from app.models import db, User, Item, Order, RecentlyViewed
-from app.search_utils import cosine_similarity
+from app.utils.search_utils import cosine_similarity
 
 
 def login_as(client, user, password="StrongPass123!"):

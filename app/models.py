@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from flask import current_app
 from datetime import datetime
-from .search_utils import generate_embedding, cosine_similarity
+from app.utils.search_utils import generate_embedding, cosine_similarity
 from app.services.storage_service import generate_get_url
 
 db = SQLAlchemy()
@@ -79,7 +79,9 @@ class User(UserMixin, db.Model):
         image_url = None
         if self.profile_image:
             image_url = generate_get_url(filename=self.profile_image)
-        return image_url or url_for("static", filename="images/default_user_profile.png")
+        return image_url or url_for(
+            "static", filename="images/default_user_profile.png"
+        )
 
 
 class Item(db.Model):
