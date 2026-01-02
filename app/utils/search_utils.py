@@ -21,9 +21,11 @@ def get_model():
 
 
 def generate_embedding(text):
+    if not text:
+        return None
     try:
         model = get_model()
-        return model.encode(text).tolist()
+        return model.encode(text)
     except Exception:
         # Embeddings disabled if dependency missing
         return None
