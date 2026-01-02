@@ -2,7 +2,7 @@
 
 from flask.helpers import url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from flask import current_app
 from flask_mail import Message
 from app.models import User, db
@@ -112,9 +112,26 @@ def resend_verification_email(email: str) -> bool:
     return True
 
 
-def verify_email_token(token):
+def verify_email_token(token: str) -> bool:
+    """
+    Verifies a user's email address given an email verification token.
+
+    Parameters
+    ----------
+    token : str
+        The email verification token.
+
+    Returns
+    -------
+    bool
+        `True` if the token is valid and the user exists, `False` otherwise.
+    """
     s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
-    email = s.loads(token, salt="email-verify-salt", max_age=3600)
+    try:
+        email = s.loads(token, salt="email-verify-salt", max_age=3600)
+    except (BadSignature, SignatureExpired):
+        current_app.logger.exception("There was an error resetting the password")
+        return False
 
     user = User.query.filter_by(email=email).first()
     if not user:
@@ -169,9 +186,11 @@ def reset_password_with_token(token: str, new_password: str) -> tuple[bool, str]
     """
     s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
 
-    try: 
+    try:
         email = s.loads(token, salt="password-reset-salt", max_age=3600)
-    except 
+    except (BadSignature, SignatureExpired) as e:
+        current_app.logger.exception("There was an error resetting the password")
+        return False, "Invalid or expired password reset token"
 
     user = User.query.filter_by(email=email).first()
     if not user:

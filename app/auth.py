@@ -36,7 +36,9 @@ def signup():
         password = request.form.get("password", "")
         confirm_password = request.form.get("confirm_password", "").strip()
 
-        user, error = create_user(first_name, last_name, email, password, confirm_password)
+        user, error = create_user(
+            first_name, last_name, email, password, confirm_password
+        )
 
         if error:
             flash(error, "danger")
@@ -92,9 +94,14 @@ def forgot_password():
         success = generate_password_reset(email)
 
         if not success:
-            current_app.logger.error(f"No account was found with the email address `{email}`")
+            current_app.logger.error(
+                f"No account was found with the email address `{email}`"
+            )
 
-        flash(f"If an account exists with `{email}`, you will receive an email with instructions on how to reset your password shortly.", "success")
+        flash(
+            f"If an account exists with `{email}`, you will receive an email with instructions on how to reset your password shortly.",
+            "success",
+        )
         return redirect(url_for("auth.login"))
 
     return render_template("forgot_password.html")
