@@ -128,14 +128,10 @@
                     <ul class="list-group mb-3">
                         {% for item in recent_items %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {% if item %}
                                 <span>{{ item.title }}</span>
                                 <a href="{{ url_for('main.item_details', item_id=item.id) }}" class="text-primary">
                                     View
                                 </a>
-                            {% else %}
-                                <span class="text-muted">Item no longer available</span>
-                            {% endif %}
                         </li>
                         {% endfor %}
                     </ul>
@@ -154,6 +150,7 @@
                         <li class="list-group-item">
                             <div class="d-flex align-items-center justify-content-between">
 
+                                <!-- LEFT: Thumbnail + item info -->
                                 <div class="d-flex align-items-center">
 
                                     <!-- Thumbnail -->
@@ -170,11 +167,6 @@
                                                 class="fw-bold text-dark text-decoration-none">
                                                 {{ order.item.title }}
                                             </a><br>
-                                    {% else %}
-                                        <div class="text-muted">
-                                            Item no longer available
-                                        </div>
-                                    {% endif %}
 
                                         {% if order.status == 'pending' %}
                                             <span class="badge bg-warning text-dark">Pending</span>
@@ -188,6 +180,7 @@
                                     </div>
                                 </div>
 
+                                <!-- RIGHT: Date -->
                                 <small class="text-muted">
                                     {{ order.created_at.strftime('%b %d, %Y') }}
                                 </small>
@@ -195,7 +188,6 @@
                             </div>
                         </li>
                         {% endfor %}
-
                     </ul>
                     {% else %}
                     <p class="text-muted">No orders yet.</p>
