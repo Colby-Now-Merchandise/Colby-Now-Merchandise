@@ -111,10 +111,10 @@ def reset_password(token):
             flash("Passwords do not match.", "danger")
             return redirect(url_for("auth.reset_password", token=token))
 
-        success = reset_password_with_token(token, new_password)
+        success, message = reset_password_with_token(token, new_password)
 
         if not success:
-            flash("The reset link is invalid or has expired.", "danger")
+            flash(message, "danger")
             return redirect(url_for("auth.forgot_password"))
 
         flash("Your password has been reset successfully!", "success")

@@ -94,12 +94,12 @@ def register_routes(api):
         if not token or not new_password:
             return error_response("Token and password required", 400)
 
-        success = reset_password_with_token(token, new_password)
+        success, message = reset_password_with_token(token, new_password)
 
         if not success:
-            return error_response("Invalid or expired token", 400)
+            return error_response(message, 400)
 
-        return success_response(message="Password reset successful")
+        return success_response(message=message, status_code=200)
 
     @api.route("/auth/verify/<token>", methods=["GET"])
     def api_verify_email(token):

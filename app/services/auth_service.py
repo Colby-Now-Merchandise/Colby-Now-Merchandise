@@ -149,14 +149,40 @@ def generate_password_reset(email):
     return True
 
 
-def reset_password_with_token(token, new_password):
+def reset_password_with_token(token: str, new_password: str) -> tuple[bool, str]:
+    """
+    Resets the user's password using a provided token.
+
+    Parameters
+    ----------
+    token : str
+        The password reset token.
+    new_password : str
+        The new password to be set.
+
+    Returns
+    -------
+    success : bool
+        `True` if the password was successfully reset, `False` otherwise.
+    message : str
+        A message indicating the result of the operation.
+    """
     s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
-    email = s.loads(token, salt="password-reset-salt", max_age=3600)
+
+    try: 
+        email = s.loads(token, salt="password-reset-salt", max_age=3600)
+    except 
 
     user = User.query.filter_by(email=email).first()
     if not user:
-        return False
+        return False, "Invalid or expired password reset token"
+
+    if not is_strong_password(new_password):
+        return (
+            False,
+            "Password must be at least 12 characters and include letters and numbers.",
+        )
 
     user.password = generate_password_hash(new_password, method="pbkdf2:sha256")
     db.session.commit()
-    return True
+    return True, "Password reset successful"
