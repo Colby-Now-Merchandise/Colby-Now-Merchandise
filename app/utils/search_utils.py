@@ -21,16 +21,14 @@ def get_model():
 
 
 def generate_embedding(text):
-    """
-    Generates a dense vector embedding for the given text.
-    Returns a numpy array (or list) suitable for storage.
-    """
     if not text:
         return None
-    model = get_model()
-    # dimensions: 384
-    embedding = model.encode(text)
-    return embedding
+    try:
+        model = get_model()
+        return model.encode(text)
+    except Exception:
+        # Embeddings disabled if dependency missing
+        return None
 
 
 def cosine_similarity(vec_a, vec_b):

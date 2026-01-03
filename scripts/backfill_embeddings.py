@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from app import create_app, db
 from app.models import Item
-from app.search_utils import generate_embedding
+from app.utils.search_utils import generate_embedding
 
 
 def backfill_embeddings():

@@ -16,14 +16,13 @@ os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
 
 # Mock imported libraries
 sys.modules["boto3"] = MagicMock()
-botocore_mock = MagicMock()
-sys.modules["botocore"] = botocore_mock
-botocore_config_mock = MagicMock()
-sys.modules["botocore.config"] = botocore_config_mock
+sys.modules["botocore"] = MagicMock()
+sys.modules["botocore.config"] = MagicMock()
+sys.modules["botocore.exceptions"] = MagicMock()
 sys.modules["sentence_transformers"] = MagicMock()
 
 from app import create_app
-from app.models import db, User, Item, Order, Chat
+from app.models import db, User, Item, Order
 
 
 @pytest.fixture(scope="session")
@@ -54,7 +53,7 @@ def mock_embeddings(monkeypatch):
     import sys
 
     # Ensure modules are loaded
-    import app.search_utils
+    import app.utils.search_utils
     import app.models
     import app.main
 
@@ -64,7 +63,9 @@ def mock_embeddings(monkeypatch):
         return [0.1, 0.2, 0.3]
 
     monkeypatch.setattr(
-        sys.modules["app.search_utils"], "generate_embedding", fake_generate_embedding
+        sys.modules["app.utils.search_utils"],
+        "generate_embedding",
+        fake_generate_embedding,
     )
     monkeypatch.setattr(
         sys.modules["app.models"], "generate_embedding", fake_generate_embedding
@@ -78,7 +79,9 @@ def mock_embeddings(monkeypatch):
         return 1.0 if v1 == v2 else 0.0
 
     monkeypatch.setattr(
-        sys.modules["app.search_utils"], "cosine_similarity", fake_cosine_similarity
+        sys.modules["app.utils.search_utils"],
+        "cosine_similarity",
+        fake_cosine_similarity,
     )
     monkeypatch.setattr(
         sys.modules["app.models"], "cosine_similarity", fake_cosine_similarity

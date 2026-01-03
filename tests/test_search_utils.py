@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 import numpy as np
 import pytest
 
-import app.search_utils as su
+import app.utils.search_utils as su
 
 
 def test_generate_embedding_mocked():
@@ -59,13 +59,13 @@ def test_cosine_similarity_various():
 
 def test_generate_embedding_coverage():
     """
-    Test the actual generate_embedding function in app/search_utils.py
+    Test the actual generate_embedding function in app/utils/search_utils.py
     by reloading the module to bypass the conftest fixture that mocks it.
     """
-    import app.search_utils
+    import app.utils.search_utils
 
     # Reload to restore the original function logic, bypassing the fixture mock
-    importlib.reload(app.search_utils)
+    importlib.reload(app.utils.search_utils)
 
     # Configure the global mock for sentence_transformers (injected by conftest)
     st_module = sys.modules["sentence_transformers"]
@@ -75,10 +75,10 @@ def test_generate_embedding_coverage():
     mock_model_instance.encode.return_value = [0.5, 0.5, 0.5]
 
     # Test the None case
-    assert app.search_utils.generate_embedding(None) is None
+    assert app.utils.search_utils.generate_embedding(None) is None
 
     # Test with valid input
-    result = app.search_utils.generate_embedding("hello world")
+    result = app.utils.search_utils.generate_embedding("hello world")
     assert result == [0.5, 0.5, 0.5]
 
     # Verify interaction

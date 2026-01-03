@@ -14,7 +14,7 @@ from flask_login import login_required, current_user
 from .models import Item, db, User, Order, Chat, RecentlyViewed
 from sqlalchemy import or_
 import pytz
-from .search_utils import generate_embedding
+from app.utils.search_utils import generate_embedding
 import os
 from datetime import datetime
 from flask_mail import Message
