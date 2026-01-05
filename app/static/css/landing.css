@@ -62,27 +62,36 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
 
-    /* FIXED: load your actual image */
+.hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
     background:
         linear-gradient(rgba(0, 32, 85, 0.55), rgba(0, 32, 85, 0.55)),
         url('../images/landing_page_hero.webp') center/cover no-repeat;
-
-    animation: heroZoom 10s ease-in-out infinite;
+    animation: heroZoom 15s ease-in-out infinite;
 }
 
 /* Ken Burns Slow Zoom */
 @keyframes heroZoom {
     0% {
-        background-size: 100%;
+        transform: scale(1);
     }
 
     50% {
-        background-size: 108%;
+        transform: scale(1.1);
     }
 
     100% {
-        background-size: 100%;
+        transform: scale(1);
     }
 }
 
@@ -116,6 +125,31 @@ main {
     font-size: 1.05rem;
     margin-bottom: 30px;
     opacity: 0.9;
+}
+
+/* Hero buttons - improved contrast */
+.hero-card .colby-btn-outline {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    transition: all 0.3s ease;
+}
+
+.hero-card .colby-btn-outline:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.hero-card .colby-btn-primary {
+    transition: all 0.3s ease;
+}
+
+.hero-card .colby-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 /*  WHY SECTION  */
