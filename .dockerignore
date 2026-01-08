@@ -10,11 +10,31 @@ env/
 
 # environment files
 .env
+.env.example
+
+# VSCode and IDE settings
+.vscode/
+.idea/
+
+# OS-generated files
+.DS_Store
+
+
+# Database and App instance files
+instance/
 
 # test-related files
 htmlcov/
 .coverage
+tests/
+.pytest_cache/
+.DS_Store
 
 # version control files
 .git
 .github
+.gitignore
+
+# Documentation
+README.md
+LICENSE
