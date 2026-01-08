@@ -1,0 +1,20 @@
+# Python cache and virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env/
+venv/
+.venv/
+env/
+
+# environment files
+.env
+
+# test-related files
+htmlcov/
+.coverage
+
+# version control files
+.git
+.github
