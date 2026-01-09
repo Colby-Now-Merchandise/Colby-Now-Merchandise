@@ -86,47 +86,7 @@
     </main>
     <!-- End of Main Content -->
 
-    <footer class="bg-light border-top mt-5 pt-5">
-        <div class="container-xl py-5">
-            <div class="row justify-content-between align-items-center gy-4">
-
-                <div class="col-md-6 col-lg-5">
-                    <h3 class="fs-2 fw-bold text-dark mb-2">Sign up for our newsletter</h3>
-                    <p class="text-secondary mb-4">Be the first to know about our special offers, news, and updates.</p>
-                    <form class="d-flex gap-2">
-                        <input type="email" placeholder="Email Address" class="form-control py-3">
-                        <button type="submit" class="btn btn-dark px-4">
-                            Sign Up
-                        </button>
-                    </form>
-                </div>
-
-                <div class="col-md-6 col-lg-auto">
-                    <nav class="d-flex flex-wrap justify-content-center justify-content-md-end gap-3 gap-lg-4">
-                        <a href="{{ url_for('main.home') }}"
-                            class="text-secondary text-decoration-none fw-medium">Home</a>
-                        <a href="#" class="text-secondary text-decoration-none fw-medium">About</a>
-                        <a href="{{ url_for('main.buy_item') }}"
-                            class="text-secondary text-decoration-none fw-medium">Browse Items</a>
-                        <a href="{{ url_for('main.post_item') }}"
-                            class="text-secondary text-decoration-none fw-medium">Post an Item</a>
-                        <a href="#" class="text-secondary text-decoration-none fw-medium">FAQs</a>
-                        <a href="#" class="text-secondary text-decoration-none fw-medium">Contact Us</a>
-                    </nav>
-                </div>
-            </div>
-        </div>
-
-        <div class="py-4 text-white-50" style="background-color: #002878;">
-            <div class="container-xl">
-                <div class="d-flex flex-column flex-sm-row justify-content-between text-center text-sm-start"
-                    style="font-size: 0.75rem;">
-                    <p class="mb-2 mb-sm-0">&copy; 2026 Mule Mart</p>
-                    <p>COPYRIGHTS MULEMART.COM. ALL RIGHTS RESERVED</p>
-                </div>
-            </div>
-        </div>
-    </footer>
+    {% include '_footer.html' %}
 
     <!-- Load Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
