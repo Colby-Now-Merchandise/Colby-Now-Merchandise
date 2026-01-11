@@ -266,7 +266,9 @@ def my_listings():
     pending_orders = [o for o in incoming_orders if o.status == "pending"]
     approved_orders = [o for o in incoming_orders if o.status == "approved"]
     completed_orders = [o for o in incoming_orders if o.status == "completed"]
-    inactive_orders = [o for o in incoming_orders if o.status in ("cancelled", "rejected")]
+    inactive_orders = [
+        o for o in incoming_orders if o.status in ("cancelled", "rejected")
+    ]
 
     return render_template(
         "my_listings.html",
