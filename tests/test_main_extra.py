@@ -38,6 +38,7 @@ def item(app, logged_user):
         seller_type="student",
         condition="good",
         price=15.0,
+        item_image="test-image.jpg",
         seller_id=logged_user.id,
         embedding=EMBED_VECTOR,
     )
@@ -84,6 +85,11 @@ def test_post_item_invalid_extension(client, logged_user):
         "/post-item",
         data={
             "title": "X",
+            "description": "desc",
+            "category": "books",
+            "size": "N/A",
+            "seller_type": "Student",
+            "condition": "Good",
             "price": "5",
             "image": bad_file,
             "uploaded_image_filename": "",
@@ -98,7 +104,16 @@ def test_post_item_invalid_extension(client, logged_user):
 def test_post_item_embedding_failure(mock_emb, client, logged_user):
     resp = client.post(
         "/post-item",
-        data={"title": "Fail", "price": "9.99", "uploaded_image_filename": "test.png"},
+        data={
+            "title": "Fail",
+            "description": "desc",
+            "category": "books",
+            "size": "N/A",
+            "seller_type": "Student",
+            "condition": "Good",
+            "price": "9.99",
+            "uploaded_image_filename": "test.png",
+        },
         follow_redirects=True,
     )
     assert b"Error posting item" in resp.data
@@ -245,7 +260,17 @@ def test_buy_item_no_semantic_results(client, logged_user, monkeypatch):
 def test_post_item_missing_price(client, logged_user):
     """Cover the 'if not price_str' branch."""
     resp = client.post(
-        "/post-item", data={"title": "No Price Item"}, follow_redirects=True
+        "/post-item",
+        data={
+            "title": "No Price Item",
+            "description": "A test item",
+            "category": "books",
+            "size": "N/A",
+            "seller_type": "Student",
+            "condition": "Good",
+            "uploaded_image_filename": "test.png",
+        },
+        follow_redirects=True,
     )
     assert b"Price is required" in resp.data
 
