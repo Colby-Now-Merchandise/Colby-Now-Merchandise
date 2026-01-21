@@ -193,7 +193,7 @@ def sample_item(seller_user):
         seller_type="student",
         condition="new",
         price=10.0,
-        item_image=None,
+        item_image="test-image.jpg",
         seller_id=seller_user.id,
         is_active=True,
         embedding=[0.1, 0.2, 0.3],

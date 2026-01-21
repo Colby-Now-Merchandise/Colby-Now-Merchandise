@@ -44,6 +44,7 @@ def test_user_and_item_repr(app):
         seller_type="student",
         condition="used",
         price=500.0,
+        item_image="laptop.jpg",
         seller_id=u.id,
     )
     db.session.add(item)
@@ -76,6 +77,7 @@ def test_item_search_with_term(app):
         seller_type="student",
         condition="new",
         price=60.0,
+        item_image="blue-jacket.jpg",
         seller_id=u.id,
     )
     item2 = Item(
@@ -86,6 +88,7 @@ def test_item_search_with_term(app):
         seller_type="student",
         condition="used",
         price=20.0,
+        item_image="math-book.jpg",
         seller_id=u.id,
     )
     db.session.add_all([item1, item2])
@@ -120,6 +123,7 @@ def test_order_and_chat_models(app):
         seller_type="student",
         condition="used",
         price=100.0,
+        item_image="desk.jpg",
         seller_id=seller.id,
     )
     db.session.add(item)

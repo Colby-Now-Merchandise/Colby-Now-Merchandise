@@ -44,6 +44,95 @@ def test_post_item_missing_title(client, logged_in_user):
     assert b"Item name is required" in resp.data
 
 
+def test_post_item_missing_description(client, logged_in_user):
+    resp = client.post(
+        "/post-item",
+        data={
+            "title": "Test Item",
+            "price": "10.00",
+            "category": "books",
+            "condition": "Good",
+            "seller_type": "Student",
+            "size": "N/A",
+            "uploaded_image_filename": "test.png",
+        },
+        follow_redirects=True,
+    )
+    assert (
+        b"Description is required" in resp.data or b"description" in resp.data.lower()
+    )
+
+
+def test_post_item_missing_category(client, logged_in_user):
+    resp = client.post(
+        "/post-item",
+        data={
+            "title": "Test Item",
+            "description": "A test description",
+            "price": "10.00",
+            "condition": "Good",
+            "seller_type": "Student",
+            "size": "N/A",
+            "uploaded_image_filename": "test.png",
+        },
+        follow_redirects=True,
+    )
+    assert b"Category is required" in resp.data or b"category" in resp.data.lower()
+
+
+def test_post_item_missing_condition(client, logged_in_user):
+    resp = client.post(
+        "/post-item",
+        data={
+            "title": "Test Item",
+            "description": "A test description",
+            "price": "10.00",
+            "category": "books",
+            "seller_type": "Student",
+            "size": "N/A",
+            "uploaded_image_filename": "test.png",
+        },
+        follow_redirects=True,
+    )
+    assert b"Condition is required" in resp.data or b"condition" in resp.data.lower()
+
+
+def test_post_item_missing_seller_type(client, logged_in_user):
+    resp = client.post(
+        "/post-item",
+        data={
+            "title": "Test Item",
+            "description": "A test description",
+            "price": "10.00",
+            "category": "books",
+            "condition": "Good",
+            "size": "N/A",
+            "uploaded_image_filename": "test.png",
+        },
+        follow_redirects=True,
+    )
+    assert b"Seller type is required" in resp.data or b"seller" in resp.data.lower()
+
+
+def test_post_item_missing_image(client, logged_in_user):
+    resp = client.post(
+        "/post-item",
+        data={
+            "title": "Test Item",
+            "description": "A test description",
+            "price": "10.00",
+            "category": "books",
+            "condition": "Good",
+            "seller_type": "Student",
+            "size": "N/A",
+        },
+        follow_redirects=True,
+    )
+    assert (
+        b"Error uploading your item image" in resp.data or b"image" in resp.data.lower()
+    )
+
+
 def test_post_item_invalid_price(client, logged_in_user, app):
     # Setup: Create an item to edit
     with app.app_context():
@@ -51,7 +140,11 @@ def test_post_item_invalid_price(client, logged_in_user, app):
             title="Test Item for Edit",
             description="desc",
             category="misc",
+            size="M",
+            seller_type="student",
+            condition="good",
             price=10.0,
+            item_image="test-image.jpg",
             seller_id=logged_in_user.id,
         )
         db.session.add(item)
@@ -136,14 +229,22 @@ def test_my_listings_search(client, logged_in_user, app):
             title="Red Shirt",
             description="Nice shirt",
             category="clothing",
+            size="M",
+            seller_type="student",
+            condition="good",
             price=15.0,
+            item_image="red-shirt.jpg",
             seller_id=logged_in_user.id,
         )
         i2 = Item(
             title="Blue Shoes",
             description="Shoes",
             category="clothing",
+            size="M",
+            seller_type="student",
+            condition="good",
             price=30.0,
+            item_image="blue-shoes.jpg",
             seller_id=logged_in_user.id,
         )
         db.session.add_all([i1, i2])
@@ -249,7 +350,11 @@ def test_edit_item_invalid_price(client, logged_in_user, app):
             title="Edit Me",
             description="desc",
             category="misc",
+            size="M",
+            seller_type="student",
+            condition="good",
             price=5.0,
+            item_image="edit-me.jpg",
             seller_id=logged_in_user.id,
         )
         db.session.add(item)
@@ -276,7 +381,11 @@ def test_edit_item_success(client, logged_in_user, app):
             title="Old Name",
             description="Old desc",
             category="misc",
+            size="M",
+            seller_type="student",
+            condition="good",
             price=5.0,
+            item_image="old-name.jpg",
             seller_id=logged_in_user.id,
         )
         db.session.add(item)
@@ -311,7 +420,11 @@ def test_delete_item(client, logged_in_user, app):
             title="Delete Me",
             description="desc",
             category="misc",
+            size="M",
+            seller_type="student",
+            condition="good",
             price=5.0,
+            item_image="delete-me.jpg",
             seller_id=logged_in_user.id,
         )
         db.session.add(item)
@@ -485,7 +598,11 @@ def test_autocomplete(client, logged_in_user, app):
             title="Autocomplete Item",
             description="stuff",
             category="misc",
+            size="M",
+            seller_type="student",
+            condition="good",
             price=1.0,
+            item_image="autocomplete.jpg",
             seller_id=logged_in_user.id,
         )
         db.session.add(item)
@@ -622,7 +739,11 @@ def test_item_search_and_semantic_search(app, logged_in_user):
             title="Blue Jacket",
             description="warm jacket",
             category="clothing",
+            size="M",
+            seller_type="student",
+            condition="good",
             price=30.0,
+            item_image="blue-jacket.jpg",
             seller_id=logged_in_user.id,
             is_active=True,
             embedding=[0.1, 0.2, 0.3],
@@ -631,7 +752,11 @@ def test_item_search_and_semantic_search(app, logged_in_user):
             title="Red Hat",
             description="small hat",
             category="clothing",
+            size="M",
+            seller_type="student",
+            condition="good",
             price=10.0,
+            item_image="red-hat.jpg",
             seller_id=logged_in_user.id,
             is_active=True,
             embedding=[0.1, 0.2, 0.3],

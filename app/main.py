@@ -154,6 +154,22 @@ def post_item():
                 flash("Item name is required.", "danger")
                 return redirect(url_for("main.post_item"))
 
+            if not description:
+                flash("Description is required.", "danger")
+                return redirect(url_for("main.post_item"))
+
+            if not category:
+                flash("Category is required.", "danger")
+                return redirect(url_for("main.post_item"))
+
+            if not condition:
+                flash("Condition is required.", "danger")
+                return redirect(url_for("main.post_item"))
+
+            if not seller_type:
+                flash("Seller type is required.", "danger")
+                return redirect(url_for("main.post_item"))
+
             if not price_str:
                 flash("Price is required.", "danger")
                 return redirect(url_for("main.post_item"))
@@ -173,11 +189,11 @@ def post_item():
 
             new_item = Item(
                 title=title,
-                description=description if description else None,
-                category=category if category else None,
+                description=description,
+                category=category,
                 size=size if size else None,
-                seller_type=seller_type if seller_type else None,
-                condition=condition if condition else None,
+                seller_type=seller_type,
+                condition=condition,
                 price=price,
                 item_image=uploaded_image_filename,
                 seller_id=current_user.id,
